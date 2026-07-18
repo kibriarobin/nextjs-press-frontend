@@ -3,11 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useActionState, useEffect } from "react";
+import { loginAction } from "../_actions/authActions";
+import { toast } from "sonner";
+// import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const [state, action, pending] = useActionState(loginAction, false);
+//   const router = useRouter();
+
+  useEffect(() => {
+    if (!state) return;
+
+    if (state.success) {
+      toast.success(state.message || "Login successful");
+    //   router.push("/dashboard");
+    }
+    if (!state.success) {
+      toast.error(state.message || "Login failed");
+    }
+  }, [state]);
+
   return (
-    <form action="">
+    <form action={action} className="space-y-4">
       <Card className="p-5 space-y-3">
         <Input
           name="email"
@@ -21,7 +39,7 @@ const LoginForm = () => {
           placeholder="Enter your password"
           required
         />
-        <Button type="submit">Login</Button>
+        <Button type="submit">{pending ? "Submitting.." : "Login"}</Button>
       </Card>
     </form>
   );

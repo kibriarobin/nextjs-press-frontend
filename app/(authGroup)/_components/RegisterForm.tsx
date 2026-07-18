@@ -7,7 +7,7 @@ import React from "react";
 
 const RegisterForm = () => {
   return (
-    <form action="">
+    <form action="" className="space-y-4">
       <Card className="p-5 space-y-3">
         <Input
           name="name"
