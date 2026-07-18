@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Settings, User, LifeBuoy, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logout } from "@/service/logout";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -28,7 +31,52 @@ const userMenuItems = [
   { label: "Support", href: "/support", icon: LifeBuoy },
 ];
 
-export function Navbar() {
+type UserProfile = {
+  id: string;
+  userId: string;
+  profilePhoto: string;
+  bio: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type IUser = {
+  id: string;
+  name: string;
+  email: string;
+  activeStatus: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  profile: UserProfile;
+};
+
+type GetMeResponse = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    profile: IUser;
+  };
+};
+
+type NavbarProps = {
+  user: GetMeResponse;
+};
+
+export function Navbar({ user }: NavbarProps) {
+
+  const router = useRouter();
+
+  const handleUserMenuAction = async (action: string) => {
+    if (action === "logout") {
+      await logout();
+      toast.success("User logged out successfully")
+      router.push("/login")
+    }
+  };
+
+
   return (
     <header className="border-b bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4">
@@ -49,19 +97,21 @@ export function Navbar() {
         </nav>
 
         {/* Right: user dropdown */}
-        <DropdownMenu>
+        {
+          user.success ? (
+            <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               className="size-9 rounded-full p-0"
               aria-label="Open user menu"
             >
-              <Avatar className="size-9 cursor-pointer">
-                <AvatarImage
+              <Avatar className="size-10 cursor-pointer">
+                {/* <AvatarImage
                   src="/diverse-user-avatars.png"
                   alt="User avatar"
-                />
-                <AvatarFallback>KR</AvatarFallback>
+                /> */}
+                <AvatarFallback>{user.data?.profile?.name}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -70,10 +120,10 @@ export function Navbar() {
               <DropdownMenuLabel>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-foreground">
-                    Jane Doe
+                    {user.data?.profile?.name}
                   </span>
                   <span className="text-xs font-normal text-muted-foreground">
-                    jane@acme.com
+                    {user.data?.profile?.email}
                   </span>
                 </div>
               </DropdownMenuLabel>
@@ -93,14 +143,22 @@ export function Navbar() {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => console.log("Sign out clicked")}
+                onClick={async () => {
+                  await handleUserMenuAction("logout");
+                }}
               >
                 <LogOut data-icon="inline-start" />
-                Sign out
+                Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+          ) : <Link href={"/login"}>
+            <Button className="cursor-pointer">
+              Login
+            </Button>
+          </Link>
+        }
       </div>
     </header>
   );
