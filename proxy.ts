@@ -1,6 +1,8 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+import { jwtUtils } from "./utils/jwt";
+import { cookies } from "next/headers";
 
 const AUTH_ROUTES = ["/login", "/register"];
 
@@ -8,7 +10,7 @@ const PUBLIC_ROUTES = ["/", "/news", "/login", "/register"];
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
-  //   const cookieStore = await cookies();
+  const cookieStore = await cookies();
   //   const accessToken = cookieStore.get("accessToken");
 
   const accessToken = request.cookies.get("accessToken")?.value;
@@ -16,13 +18,18 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const decodedToken = accessToken
-    ? (jwt.decode(accessToken) as JwtPayload)
+    ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
     : null;
 
   let userRole = null;
 
-  if (decodedToken) {
-    userRole = decodedToken.role;
+  if (!decodedToken?.success) {
+    cookieStore.delete("accessToken");
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (decodedToken?.success && decodedToken.data) {
+    userRole = (decodedToken.data as JwtPayload).role;
   }
 
   if (accessToken && AUTH_ROUTES.includes(pathname)) {
@@ -41,12 +48,12 @@ export async function proxy(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 
-//   authentication
+  //   authentication
   if (!accessToken && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-//   authorization
+  //   authorization
   if (pathname.startsWith("/dashboard") && userRole !== "USER") {
     return NextResponse.redirect(new URL("/not-found", request.url));
   } else if (pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN") {
