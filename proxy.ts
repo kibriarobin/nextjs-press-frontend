@@ -41,8 +41,21 @@ export async function proxy(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 
+//   authentication
   if (!accessToken && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+//   authorization
+  if (pathname.startsWith("/dashboard") && userRole !== "USER") {
+    return NextResponse.redirect(new URL("/not-found", request.url));
+  } else if (pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN") {
+    return NextResponse.redirect(new URL("/not-found", request.url));
+  } else if (
+    pathname.startsWith("/author-dashboard") &&
+    userRole !== "AUTHOR"
+  ) {
+    return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
   //   return NextResponse.redirect(new URL('/', request.url))
