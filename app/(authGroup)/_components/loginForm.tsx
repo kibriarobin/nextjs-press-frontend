@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import React, { useActionState, useEffect } from "react";
 import { loginAction } from "../_actions/authActions";
 import { toast } from "sonner";
+import Link from "next/link";
 // import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
@@ -39,7 +40,13 @@ const LoginForm = () => {
           placeholder="Enter your password"
           required
         />
-        <Button type="submit">{pending ? "Submitting.." : "Login"}</Button>
+        <Button type="submit">{pending ? "Submitting..." : "Login"}</Button>
+        <p className="text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-primary font-medium hover:underline">
+            Register
+          </Link>
+        </p>
       </Card>
     </form>
   );

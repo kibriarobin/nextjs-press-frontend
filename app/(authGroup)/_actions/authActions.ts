@@ -67,3 +67,62 @@ export const loginAction = async (
 
   return result;
 };
+
+// register action
+type RegisterProfile = {
+  id: string;
+  userId: string;
+  profilePhoto: string | null;
+  bio: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type RegisterUser = {
+  id: string;
+  name: string;
+  email: string;
+  activeStatus: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  profile: RegisterProfile;
+};
+
+type RegisterState = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data?: {
+    user: RegisterUser;
+  };
+};
+
+export const registerAction = async (
+  prevState: RegisterState,
+  formData: FormData,
+) => {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+  const profilePhoto = formData.get("profilePhoto");
+
+  const payload = {
+    name,
+    email,
+    password,
+    ...(profilePhoto ? { profilePhoto } : {}),
+  };
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/register`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await res.json();
+
+  return result;
+};

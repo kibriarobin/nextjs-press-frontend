@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Settings, User, LifeBuoy, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,7 +34,7 @@ const userMenuItems = [
 type UserProfile = {
   id: string;
   userId: string;
-  profilePhoto: string;
+  profilePhoto?: string;
   bio: string | null;
   createdAt: string;
   updatedAt: string;
@@ -107,10 +107,7 @@ export function Navbar({ user }: NavbarProps) {
               aria-label="Open user menu"
             >
               <Avatar className="size-10 cursor-pointer">
-                {/* <AvatarImage
-                  src="/diverse-user-avatars.png"
-                  alt="User avatar"
-                /> */}
+                <AvatarImage src={user.data?.profile?.profile?.profilePhoto} alt={user.data?.profile?.name} />
                 <AvatarFallback>{user.data?.profile?.name}</AvatarFallback>
               </Avatar>
             </Button>
