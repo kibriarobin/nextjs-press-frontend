@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/service/logout";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 const navItems = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Service", href: "/service" },
   { label: "Contact", href: "/contact" },
+  { label: "Premium", href: "/premium" },
+  { label: "News", href: "/news" },
 ];
 
 const userMenuItems = [
@@ -65,21 +67,20 @@ type NavbarProps = {
 };
 
 export function Navbar({ user }: NavbarProps) {
-
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleUserMenuAction = async (action: string) => {
     if (action === "logout") {
       await logout();
-      toast.success("User logged out successfully")
-      router.push("/login")
+      toast.success("User logged out successfully");
+      // router.push("/login")
+      window.location.href = "/login";
     }
   };
 
-
   return (
     <header className="border-b bg-background">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4">
         {/* Left: logo */}
         <Link href="/" className="flex items-center gap-2">
           <span className="text-lg font-semibold tracking-tight">
@@ -97,65 +98,66 @@ export function Navbar({ user }: NavbarProps) {
         </nav>
 
         {/* Right: user dropdown */}
-        {
-          user.success ? (
-            <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="size-9 rounded-full p-0"
-              aria-label="Open user menu"
-            >
-              <Avatar className="size-10 cursor-pointer">
-                <AvatarImage src={user.data?.profile?.profile?.profilePhoto} alt={user.data?.profile?.name} />
-                <AvatarFallback>{user.data?.profile?.name}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-foreground">
-                    {user.data?.profile?.name}
-                  </span>
-                  <span className="text-xs font-normal text-muted-foreground">
-                    {user.data?.profile?.email}
-                  </span>
-                </div>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {userMenuItems.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href}>
-                    <item.icon data-icon="inline-start" />
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={async () => {
-                  await handleUserMenuAction("logout");
-                }}
+        {user.success ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="size-9 rounded-full p-0"
+                aria-label="Open user menu"
               >
-                <LogOut data-icon="inline-start" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-          ) : <Link href={"/login"}>
-            <Button className="cursor-pointer">
-              Login
-            </Button>
+                <Avatar className="size-10 cursor-pointer">
+                  <AvatarImage
+                    src={user.data?.profile?.profile?.profilePhoto}
+                    alt={user.data?.profile?.name}
+                  />
+                  <AvatarFallback>{user.data?.profile?.name}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-foreground">
+                      {user.data?.profile?.name}
+                    </span>
+                    <span className="text-xs font-normal text-muted-foreground">
+                      {user.data?.profile?.email}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {userMenuItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href}>
+                      <item.icon data-icon="inline-start" />
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={async () => {
+                    await handleUserMenuAction("logout");
+                  }}
+                >
+                  <LogOut data-icon="inline-start" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link href={"/login"}>
+            <Button className="cursor-pointer">Login</Button>
           </Link>
-        }
+        )}
       </div>
     </header>
   );
