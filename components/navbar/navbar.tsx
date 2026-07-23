@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Settings, User, LifeBuoy, LogOut } from "lucide-react";
+import { Settings, User, LifeBuoy, LogOut, CreditCard } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,6 +31,7 @@ const userMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Support", href: "/support", icon: LifeBuoy },
+  {label: "My Subscription", href: "/subscription", icon: CreditCard}
 ];
 
 type UserProfile = {

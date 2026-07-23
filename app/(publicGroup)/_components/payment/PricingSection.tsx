@@ -15,7 +15,7 @@ const PricingSection = async() => {
   const statusResult = await getSubscriptionStatus();
 
   const isActive = Boolean(
-    statusResult?.success && statusResult?.data?.isSubscribe,
+    statusResult?.success && statusResult?.data?.isSubscribed,
   );
 
   return (
