@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: "typeofnan.dev" },
       { hostname: "example.com" },
+      { hostname: "images.unsplash.com" },
     ],
   },
 };

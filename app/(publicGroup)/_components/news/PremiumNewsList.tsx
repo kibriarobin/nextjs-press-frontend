@@ -2,8 +2,13 @@ import { IPost } from "@/lib/type";
 import { getPremiumNews } from "../../_actions/getPremiumNews";
 import NewsCard from "./NewsCard";
 
-export async function PremiumNewsList() {
-  const result = await getPremiumNews();
+export async function PremiumNewsList({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = await searchParams;
+  const result = await getPremiumNews({query});
 
   if (!result.success || !result.data?.length) {
     return (
@@ -15,7 +20,7 @@ export async function PremiumNewsList() {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {result.data.map((post: IPost) => (
           <NewsCard key={post.id} post={post}></NewsCard>
         ))}

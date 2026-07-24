@@ -97,8 +97,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
-  
-
   if (pathname === "/premium") {
     const subscriptionStatus = await getSubscriptionStatus();
 
@@ -108,6 +106,18 @@ export async function proxy(request: NextRequest) {
 
     if(!isActive){
       return NextResponse.redirect(new URL("/payment", request.url))
+    }
+  }
+
+  if (pathname === "/payment") {
+    const subscriptionStatus = await getSubscriptionStatus();
+
+    const isActive = Boolean(
+      subscriptionStatus?.success && subscriptionStatus?.data?.isSubscribed,
+    );
+
+    if(isActive){
+      return NextResponse.redirect(new URL("/premium", request.url))
     }
   }
 
