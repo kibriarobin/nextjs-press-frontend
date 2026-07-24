@@ -37,7 +37,10 @@ export type IPost = {
   createdAt: string;
   updatedAt: string;
   author: IAuthor;
-  comments: IComment[];
+  comments?: IComment[];
+  _count?:{
+        comments: number;
+    };
 };
 
 export type IMeta = {
